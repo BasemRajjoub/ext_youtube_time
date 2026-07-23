@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Watch Time Today",
+  "version": "1.0.0",
+  "description": "Shows cumulative today's YouTube video watch time next to the logo.",
+  "permissions": ["storage"],
+  "host_permissions": ["https://www.youtube.com/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*"],
+      "js": ["content/storage.js", "content/tracker.js", "content/badge.js"],
+      "css": ["content/styles.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}

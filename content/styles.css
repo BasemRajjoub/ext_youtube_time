@@ -1,0 +1,11 @@
+.ywt-badge {
+  display: inline-flex;
+  align-items: center;
+  color: #ff0000;
+  font-weight: 700;
+  font-size: 18px;
+  margin-left: 12px;
+  font-family: "YouTube Sans", Roboto, Arial, sans-serif;
+  white-space: nowrap;
+  user-select: none;
+}
