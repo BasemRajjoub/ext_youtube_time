@@ -49,18 +49,15 @@ document.addEventListener('yt-navigate-finish', ywtScheduleInject);
 ywtScheduleInject();
 
 async function ywtRefreshFromStorage() {
-  const rec = await ywtGetRecord();
-  const key = ywtTodayKey();
-  ywtDisplayedRecord = (rec && rec.date === key) ? rec : { date: key, seconds: 0 };
+  const seconds = await ywtGetTodaySeconds();
+  ywtDisplayedRecord = { date: ywtTodayKey(), seconds };
 }
 
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area !== 'local' || !changes.ywt_watch_today) return;
-  const newValue = changes.ywt_watch_today.newValue;
+  if (area !== 'local' || !changes[YWT_HISTORY_KEY]) return;
+  const newHistory = changes[YWT_HISTORY_KEY].newValue || {};
   const key = ywtTodayKey();
-  if (newValue && newValue.date === key) {
-    ywtDisplayedRecord = newValue;
-  }
+  ywtDisplayedRecord = { date: key, seconds: newHistory[key] || 0 };
 });
 
 ywtRefreshFromStorage();

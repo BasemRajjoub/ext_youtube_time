@@ -5,6 +5,10 @@
   "description": "Shows cumulative today's YouTube video watch time next to the logo.",
   "permissions": ["storage"],
   "host_permissions": ["https://www.youtube.com/*"],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_title": "YouTube Watch Time"
+  },
   "content_scripts": [
     {
       "matches": ["https://www.youtube.com/*"],
