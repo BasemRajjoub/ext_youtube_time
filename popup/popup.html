@@ -15,6 +15,22 @@
   </table>
   <p id="empty-msg" hidden>No history yet.</p>
   <button id="export-btn">Export CSV</button>
+
+  <h1>Settings</h1>
+  <label class="settings-row">
+    Daily limit (min)
+    <input type="number" id="limit-input" min="0" step="5">
+  </label>
+  <label class="settings-row">
+    Badge color
+    <input type="color" id="color-input">
+  </label>
+  <label class="settings-row">
+    Badge size (px)
+    <input type="range" id="size-input" min="18" max="120" step="1">
+    <span id="size-value"></span>
+  </label>
+
   <script src="popup.js"></script>
 </body>
 </html>

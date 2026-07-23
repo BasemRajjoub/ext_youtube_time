@@ -1,4 +1,11 @@
 const YWT_HISTORY_KEY = 'ywt_history';
+const YWT_SETTINGS_KEY = 'ywt_settings';
+const YWT_DEFAULT_SETTINGS = { limitMinutes: 120, color: '#ff0000', fontSize: 54 };
+
+async function ywtGetSettings() {
+  const store = await chrome.storage.local.get(YWT_SETTINGS_KEY);
+  return { ...YWT_DEFAULT_SETTINGS, ...(store[YWT_SETTINGS_KEY] || {}) };
+}
 
 function ywtTodayKey() {
   const d = new Date();

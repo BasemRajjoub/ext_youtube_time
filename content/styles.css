@@ -8,4 +8,14 @@
   font-family: "YouTube Sans", Roboto, Arial, sans-serif;
   white-space: nowrap;
   user-select: none;
+  cursor: default;
+}
+
+.ywt-badge.ywt-over-limit {
+  animation: ywt-pulse 1s ease-in-out infinite;
+}
+
+@keyframes ywt-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
 }

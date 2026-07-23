@@ -7,12 +7,14 @@ const YWT_LOGO_SELECTORS = [
 
 let ywtDisplayedRecord = { date: '', seconds: 0 };
 let ywtPendingInject = false;
+let ywtSettings = { ...YWT_DEFAULT_SETTINGS };
 
 function ywtFormatDuration(totalSeconds) {
   const s = Math.max(0, Math.floor(totalSeconds));
   const h = Math.floor(s / 3600);
   const m = Math.floor((s % 3600) / 60);
-  return `${h}:${String(m).padStart(2, '0')}`;
+  const sec = s % 60;
+  return `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
 }
 
 function ywtFindLogoContainer() {
@@ -54,13 +56,19 @@ async function ywtRefreshFromStorage() {
 }
 
 chrome.storage.onChanged.addListener((changes, area) => {
-  if (area !== 'local' || !changes[YWT_HISTORY_KEY]) return;
-  const newHistory = changes[YWT_HISTORY_KEY].newValue || {};
-  const key = ywtTodayKey();
-  ywtDisplayedRecord = { date: key, seconds: newHistory[key] || 0 };
+  if (area !== 'local') return;
+  if (changes[YWT_HISTORY_KEY]) {
+    const newHistory = changes[YWT_HISTORY_KEY].newValue || {};
+    const key = ywtTodayKey();
+    ywtDisplayedRecord = { date: key, seconds: newHistory[key] || 0 };
+  }
+  if (changes[YWT_SETTINGS_KEY]) {
+    ywtSettings = { ...YWT_DEFAULT_SETTINGS, ...(changes[YWT_SETTINGS_KEY].newValue || {}) };
+  }
 });
 
 ywtRefreshFromStorage();
+ywtGetSettings().then((s) => { ywtSettings = s; });
 
 setInterval(() => {
   const key = ywtTodayKey();
@@ -72,5 +80,18 @@ setInterval(() => {
   if (!badge) return;
 
   const liveExtra = (ywtIsTracking) ? (performance.now() - ywtSegmentStartMs) / 1000 : 0;
-  badge.textContent = ywtFormatDuration(ywtDisplayedRecord.seconds + ywtPendingDeltaSec + liveExtra);
+  const totalSeconds = ywtDisplayedRecord.seconds + ywtPendingDeltaSec + liveExtra;
+
+  badge.textContent = ywtFormatDuration(totalSeconds);
+  badge.style.color = ywtSettings.color;
+  badge.style.fontSize = `${ywtSettings.fontSize}px`;
+
+  const limitSeconds = ywtSettings.limitMinutes * 60;
+  const overLimit = limitSeconds > 0 && totalSeconds >= limitSeconds;
+  badge.classList.toggle('ywt-over-limit', overLimit);
+
+  const limitStr = ywtFormatDuration(limitSeconds);
+  badge.title = overLimit
+    ? `Today: ${ywtFormatDuration(totalSeconds)}\nDaily limit ${limitStr} exceeded!`
+    : `Today: ${ywtFormatDuration(totalSeconds)}\nDaily limit: ${limitStr}`;
 }, 1000);
